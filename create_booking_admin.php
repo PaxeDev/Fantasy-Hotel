@@ -21,17 +21,40 @@ if (isset($_POST["submit"])) {
     $user_id = cleanInput($_POST['user_id']);
     $start_date = cleanInput($_POST['start_date']);
     $end_date = cleanInput($_POST['end_date']);
+    $today = date("Y-m-d");
 
     if (empty($room_id) || empty($user_id) || empty($start_date) || empty($end_date)) {
         $errors[] = "All fields are required.";
     } else {
-        $sql = "INSERT INTO bookings (fk_rooms_id, fk_users_id, start_date, end_date) 
-                VALUES ('$room_id', '$user_id', '$start_date', '$end_date')";
+        // Verifica si las fechas son válidas
+        if ($start_date < $today) {
+            $errors[] = "The start date cannot be before today.";
+        }
+        if ($start_date > $end_date) {
+            $errors[] = "Start date cannot be later than end date.";
+        }
+        if (strtotime($start_date) > strtotime('+2 years', strtotime($today))) {
+            $errors[] = "You cannot book a room more than 2 years in advance.";
+        }
 
-        if (mysqli_query($connect, $sql)) {
-            $message = "Booking created successfully!";
-        } else {
-            $errors[] = "Error: " . $sql . "<br>" . mysqli_error($connect);
+        // Verifica si hay conflictos de fechas
+        if (empty($errors)) {
+            $conflict_sql = "SELECT * FROM bookings WHERE fk_rooms_id = '$room_id' AND ('$start_date' BETWEEN start_date AND end_date OR '$end_date' BETWEEN start_date AND end_date OR start_date BETWEEN '$start_date' AND '$end_date' OR end_date BETWEEN '$start_date' AND '$end_date')";
+            $conflict_result = mysqli_query($connect, $conflict_sql);
+
+            if (mysqli_num_rows($conflict_result) > 0) {
+                $errors[] = "These dates are already booked. Please choose different dates.";
+            } else {
+                // Insert booking record
+                $sql = "INSERT INTO bookings (fk_rooms_id, fk_users_id, start_date, end_date) 
+                        VALUES ('$room_id', '$user_id', '$start_date', '$end_date')";
+
+                if (mysqli_query($connect, $sql)) {
+                    $message = "Booking created successfully!";
+                } else {
+                    $errors[] = "Error: " . $sql . "<br>" . mysqli_error($connect);
+                }
+            }
         }
     }
 }

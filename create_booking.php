@@ -46,10 +46,13 @@ if (isset($_POST["book"])) {
         echo "<div class='alert alert-danger' role='alert'>
                   <h3>The date cannot be before today.</h3>
               </div>";
-    }
-    if ($start_date > $end_date) {
+    } elseif ($start_date > $end_date) {
         echo "<div class='alert alert-danger' role='alert'>
                   <h3>Start date cannot be later than end date.</h3>
+              </div>";
+    } elseif (strtotime($start_date) > strtotime('+2 years', strtotime($today))) {
+        echo "<div class='alert alert-danger' role='alert'>
+                  <h3>You cannot book a room more than 2 years in advance.</h3>
               </div>";
     } else {
         // Verifica si hay conflictos de fechas
