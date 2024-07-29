@@ -27,7 +27,7 @@ if (mysqli_num_rows($result) > 0) {
                    <div class='card-body'>
                    <h5 class='card-title'>{$rowR["room_name"]}</h5>
                    <p class='card-text'>Number room: {$rowR["room_number"]}</p>
-                   <p class='card-text'>Price: {$rowR["price"]}</p>
+                   <p class='card-text'>Price: {$rowR["price"]}€/night</p>
                    <p class='card-text'>Type: {$rowR["type"]}</p>
                    <a href='details.php?id={$rowR["room_id"]}' class='btn btn-success'>Details</a>
                    <a href='create_booking.php?id={$rowR["room_id"]}' class='btn btn-warning'>Booking</a>                  

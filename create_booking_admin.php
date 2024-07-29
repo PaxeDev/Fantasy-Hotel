@@ -6,7 +6,7 @@ if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
     header("Location: login.php");
     exit();
 }
-if (isset($_SESSION["user"])) { // if a session "admin" is exist and have a value
+if (isset($_SESSION["user"])) { // if a session "admin" exists and has a value
     header("Location: home.php");
     exit(); // redirect the admin to the dashboard page
 }
@@ -14,7 +14,7 @@ if (isset($_SESSION["user"])) { // if a session "admin" is exist and have a valu
 require_once "connection.php";
 
 $errors = [];
-$message = "";
+$message = $room_id = $user_id = $start_date = $end_date = "";
 
 if (isset($_POST["submit"])) {
     $room_id = cleanInput($_POST['room_id']);
@@ -70,12 +70,14 @@ mysqli_close($connect);
 // Prepare the room and user options for the select elements
 $roomOptions = "";
 while ($room = mysqli_fetch_assoc($result_rooms)) {
-    $roomOptions .= "<option value='{$room['room_id']}'>{$room['room_name']} - Room Number: {$room['room_number']}</option>";
+    $selected = $room_id == $room['room_id'] ? "selected" : "";
+    $roomOptions .= "<option value='{$room['room_id']}' $selected>{$room['room_name']} - Room Number: {$room['room_number']}</option>";
 }
 
 $userOptions = "";
 while ($user = mysqli_fetch_assoc($result_users)) {
-    $userOptions .= "<option value='{$user['id']}'>{$user['first_name']} {$user['last_name']}</option>";
+    $selected = $user_id == $user['id'] ? "selected" : "";
+    $userOptions .= "<option value='{$user['id']}' $selected>{$user['first_name']} {$user['last_name']}</option>";
 }
 
 $errorMessages = "";
@@ -125,11 +127,11 @@ if ($message) {
             </div>
             <div class="mb-3">
                 <label for="start_date" class="form-label">Fecha de Inicio</label>
-                <input type="date" id="start_date" name="start_date" class="form-control" required>
+                <input type="date" id="start_date" name="start_date" class="form-control" value="<?= htmlspecialchars($start_date); ?>" required>
             </div>
             <div class="mb-3">
                 <label for="end_date" class="form-label">Fecha de Fin</label>
-                <input type="date" id="end_date" name="end_date" class="form-control" required>
+                <input type="date" id="end_date" name="end_date" class="form-control" value="<?= htmlspecialchars($end_date); ?>" required>
             </div>
             <button type="submit" name="submit" class="btn btn-primary">Crear Reserva</button>
             <div class='d-flex justify-content-center'>
@@ -140,7 +142,6 @@ if ($message) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         let timer = 3;
-
         setInterval(() => {
             timer--;
             document.getElementById("timer").innerText = timer;

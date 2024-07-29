@@ -29,7 +29,7 @@ if (mysqli_num_rows($resultRooms) > 0) {
             <div class='card-body'>
                 <h5 class='card-title'>{$rowRoom["room_name"]}</h5>
                 <p class='card-text'>Number room: {$rowRoom["room_number"]}</p>
-                <p class='card-text'>Price: {$rowRoom["price"]}</p>
+                <p class='card-text'>Price: {$rowRoom["price"]}€/night</p>
                 <a href='details.php?id={$rowRoom["room_id"]}' class='btn btn-success'>Details</a>
                 <a href='update.php?id={$rowRoom["room_id"]}' class='btn btn-warning'>Update Room</a>
                 <a href='delete.php?id={$rowRoom["room_id"]}' class='btn btn-danger mt-2'>Delete</a>
