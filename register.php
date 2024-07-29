@@ -77,7 +77,7 @@ if (isset($_POST["submit"])) {
 
     if (!$error) {
         $pass = hash("sha256", $pass);
-        $sql = "INSERT INTO `users`(`first_name`, `last_name`, `email`, `date_of_birth`, `password`, `picture`) VALUES ('$first_name','$last_name','$email','$date_of_birth','$pass','$picture[0]')";
+        $sql = "INSERT INTO `users`(`first_name`, `last_name`, `email`, `date_of_birth`, `password`, `images`) VALUES ('$first_name','$last_name','$email','$date_of_birth','$pass','$picture[0]')";
         $result = mysqli_query($connect, $sql);
         if ($result) {
             echo "<div class='alert alert-success' role='alert'>

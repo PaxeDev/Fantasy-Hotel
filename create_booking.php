@@ -34,13 +34,19 @@ if (!$resultR) {
     die("Error fetching room details: " . mysqli_error($connect));
 }
 $rowR = mysqli_fetch_assoc($resultR);
-
+$today = date("m.d.y");
+// echo $today;
 if (isset($_POST["book"])) {
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
     $user_id = $_SESSION['user'];
-
+    $today = date("m.d.y");
     // Verifica si las fechas son válidas
+    if ($start_date < $today) {
+        echo "<div class='alert alert-danger' role='alert'>
+                  <h3>The date cannot be before today.</h3>
+              </div>";
+    }
     if ($start_date > $end_date) {
         echo "<div class='alert alert-danger' role='alert'>
                   <h3>Start date cannot be later than end date.</h3>
