@@ -1,12 +1,14 @@
 <?php
 session_start();
 
+// Protect the page from unauthorized access
 if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
     header("Location: login.php");
     exit();
 }
 
 require_once "connection.php";
+
 $id = $_GET["id"];
 $sql = "SELECT * FROM bookings WHERE id_booking = $id";
 $result = mysqli_query($connect, $sql);
@@ -18,38 +20,57 @@ if (mysqli_num_rows($result) == 1) {
     exit();
 }
 
+$isAdmin = isset($_SESSION["admin"]);
+$isUser = isset($_SESSION["user"]) && !$isAdmin;
+
 if (isset($_POST["update"])) {
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
-    $status = $_POST['status'];
 
     // Verify if the dates are valid
     if ($start_date > $end_date) {
-        echo "<div class='alert alert-danger' role='alert'>
-                  <h3>Start date cannot be later than end date.</h3>
-              </div>";
+        $error_message = "<div class='alert alert-danger' role='alert'>
+                            <h3>Start date cannot be later than end date.</h3>
+                        </div>";
     } else {
+        // Set the status to 'accepted' by default for users
+        $status = $isAdmin ? $_POST['status'] : 'accepted';
+
         // Update booking record
         $sql_update = "UPDATE bookings SET start_date = '$start_date', end_date = '$end_date', status = '$status' WHERE id_booking = $id";
         $result_update = mysqli_query($connect, $sql_update);
 
         if ($result_update) {
-            echo "<div class='alert alert-success' role='alert'>
-            <h4 class='alert-heading'>Updated Successfully!</h4>
-            <p>You will be redirected in <span id ='timer'>3</span> seconds!</p>
-        </div>";
+            $success_message = "<div class='alert alert-success' role='alert'>
+                                <h4 class='alert-heading'>Updated Successfully!</h4>
+                                <p>You will be redirected in <span id ='timer'>3</span> seconds!</p>
+                            </div>";
             header("refresh: 3; url=CRUD/index.php");
         } else {
-            echo "<div class='alert alert-danger' role='alert'>
-                      <h3>Something went wrong, please try again later!</h3>
-                  </div>";
+            $error_message = "<div class='alert alert-danger' role='alert'>
+                                <h3>Something went wrong, please try again later!</h3>
+                            </div>";
         }
     }
 }
 
+// Prepare the form fields based on user role
+$status_options = '';
+if ($isAdmin) {
+    $status_options = "<div class='mb-3'>
+                        <label for='status'>Status</label>
+                        <select class='form-control' style='width: 18rem;' id='status' name='status' required>
+                            <option value='accepted' " . ($row['status'] == 'accepted' ? 'selected' : '') . ">Accepted</option>
+                            <option value='confirmed' " . ($row['status'] == 'confirmed' ? 'selected' : '') . ">Confirmed</option>
+                            <option value='cancelled' " . ($row['status'] == 'cancelled' ? 'selected' : '') . ">Cancelled</option>
+                        </select>
+                    </div>";
+} else {
+    $status_options = "<input type='hidden' name='status' value='accepted'>";
+}
+
 mysqli_close($connect);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -62,8 +83,11 @@ mysqli_close($connect);
 
 <body>
     <div class="container">
+        <?php if (isset($error_message)) echo $error_message; ?>
+        <?php if (isset($success_message)) echo $success_message; ?>
+
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?id=" . $id ?>" class="w-50 mx-auto">
-            <h2 class="mb-3">Update Booking </h2>
+            <h2 class="mb-3">Update Booking</h2>
             <div class="mb-3">
                 <label for="start_date">Start Date</label>
                 <input type="date" class="form-control" style='width: 18rem;' id="start_date" name="start_date" value="<?= $row['start_date'] ?>" required>
@@ -72,14 +96,7 @@ mysqli_close($connect);
                 <label for="end_date">End Date</label>
                 <input type="date" class="form-control" style='width: 18rem;' id="end_date" name="end_date" value="<?= $row['end_date'] ?>" required>
             </div>
-            <div class="mb-3">
-                <label for="status">Status</label>
-                <select class="form-control" style='width: 18rem;' id="status" name="status" required>
-                    <option value="accepted" <?= $row['status'] == 'accepted' ? 'selected' : '' ?>>Accepted</option>
-                    <option value="confirmed" <?= $row['status'] == 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
-                    <option value="cancelled" <?= $row['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                </select>
-            </div>
+            <?php echo $status_options; ?>
             <input type="submit" class="btn btn-primary" name="update" value="Update Booking">
             <div class='d-flex justify-content-center'>
                 <a href='CRUD/index.php' class='btn btn-secondary text-center'>Go Back</a>

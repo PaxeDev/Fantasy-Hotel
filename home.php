@@ -39,8 +39,9 @@ if (mysqli_num_rows($result) > 0) {
 } else {
     $cards = "<p>No results found</p>";
 }
+
 // Fetch user reservations
-$sqlReservations = "SELECT * 
+$sqlReservations = "SELECT bookings.*, rooms.room_name, rooms.room_number 
                     FROM bookings 
                     JOIN rooms ON bookings.fk_rooms_id = rooms.room_id 
                     WHERE fk_users_id = $userId";
@@ -51,23 +52,24 @@ if (mysqli_num_rows($resultReservations) > 0) {
     while ($rowRes = mysqli_fetch_assoc($resultReservations)) {
         $start_date = date("d-m-Y", strtotime($rowRes["start_date"]));
         $end_date = date("d-m-Y", strtotime($rowRes["end_date"]));
-        $reservations .= "<div class='card mt-3' style='width: 18rem;'>
+        $reservations .= "<div class='card mt-3 mx-2' style='width: 18rem;'>
             <div class='card-body'>
                 <h5 class='card-title'>Room: {$rowRes["room_name"]}</h5>
+                <p class='card-text'>Reservation Number: {$rowRes["id_booking"]}</p>
                 <p class='card-text'>Room Number: {$rowRes["room_number"]}</p>
                 <p class='card-text'>Start Date: $start_date</p>
-                <p class='card-text'>End Date: $end_date</p>
+                <p class='card-text'>End Date: $end_date</p>                
+                <p class='card-text'>Status: {$rowRes["status"]}</p>
                 <a href='update_booking.php?id={$rowRes["id_booking"]}' class='btn btn-warning'>Update Booking</a>
-                
+                <a href='update_booking_status.php?id={$rowRes["id_booking"]}' class='btn btn-danger mt-3'>Cancell Booking</a>
             </div>
         </div>";
     }
 } else {
     $reservations = "<p>No reservations found</p>";
 }
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -76,7 +78,6 @@ if (mysqli_num_rows($resultReservations) > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome <?= $row["first_name"] ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-
 </head>
 
 <body>
@@ -93,27 +94,28 @@ if (mysqli_num_rows($resultReservations) > 0) {
                     <li class="nav-item">
                         <a class="nav-link" href="profile_update.php">Edit Profile</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#reservations">Reservations</a>
+                    </li>
                 </ul>
                 <div class="d-flex">
                     <a class="btn btn-danger" href="logout.php?logout">Logout</a>
                 </div>
             </div>
-    </div>
-    </nav>
-    <h2 class="text-center">Welcome <?= $row["first_name"] . " " . $row["last_name"] ?></h2>
-    <div class="container mt-5">
-
-        <h1 class="mt-5">Book your room</h1>
-        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 row-cols-xs-1">
-            <?= $cards ?>
+        </nav>
+        <h2 class="text-center">Welcome <?= $row["first_name"] . " " . $row["last_name"] ?></h2>
+        <div class="container mt-5">
+            <h1 class="mt-5">Book your room</h1>
+            <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 row-cols-xs-1">
+                <?= $cards ?>
+            </div>
         </div>
-    </div>
-    <div class="container mt-5">
-        <h1 class="mt-5">Your Reservations</h1>
-        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 row-cols-xs-1">
-            <?= $reservations ?>
+        <div class="container mt-5" id="reservations">
+            <h1 class="mt-5">Your Reservations</h1>
+            <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 row-cols-xs-1">
+                <?= $reservations ?>
+            </div>
         </div>
-    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
