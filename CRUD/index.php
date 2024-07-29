@@ -34,7 +34,8 @@ if (mysqli_num_rows($resultRooms) > 0) {
 } else {
     $roomCards = "<p>No rooms found</p>";
 }
-$sqlBookings = "SELECT * 
+
+$sqlBookings = "SELECT bookings.*, rooms.room_name, rooms.room_number, users.first_name, users.last_name 
                 FROM bookings 
                 JOIN rooms ON bookings.fk_rooms_id = rooms.room_id 
                 JOIN users ON bookings.fk_users_id = users.id";
@@ -48,11 +49,15 @@ if (mysqli_num_rows($resultBookings) > 0) {
         $bookingCards .= "<div class='card mt-2 mx-2 ' style='width: 18rem;'>
             <div class='card-body'>
                 <h5 class='card-title'>Room: {$row["room_name"]}</h5>
+                <p class='card-text'>Booking Number: {$row["id_booking"]}</p>
                 <p class='card-text'>Room Number: {$row["room_number"]}</p>
                 <p class='card-text'>Booking dates: $start_date to $end_date</p>
                 <p class='card-text'>Reserved by: {$row["first_name"]} {$row["last_name"]}</p>
+                <p class='card-text'>Status: {$row["status"]}</p>
                 <a href='../update_booking.php?id={$row["id_booking"]}' class='btn btn-warning'>Update Booking</a>
                 <a href='../delete_booking.php?id={$row["id_booking"]}' class='btn btn-danger mt-2'>Delete Booking</a>
+                <a href='../update_booking_status.php?id={$row["id_booking"]}&status=confirmed' class='btn btn-success mt-2'>Confirm</a>
+                <a href='../update_booking_status.php?id={$row["id_booking"]}&status=cancelled' class='btn btn-secondary mt-2'>Cancel</a>
             </div>
         </div>";
     }
@@ -90,7 +95,7 @@ mysqli_close($connect);
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguR3rMwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </body>
 
 </html>

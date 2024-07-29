@@ -46,8 +46,8 @@ if (isset($_POST["submit"])) {
                 $errors[] = "These dates are already booked. Please choose different dates.";
             } else {
                 // Insert booking record
-                $sql = "INSERT INTO bookings (fk_rooms_id, fk_users_id, start_date, end_date) 
-                        VALUES ('$room_id', '$user_id', '$start_date', '$end_date')";
+                $sql = "INSERT INTO bookings (fk_rooms_id, fk_users_id, start_date, end_date, status) 
+                        VALUES ('$room_id', '$user_id', '$start_date', '$end_date', 'accepted')";
 
                 if (mysqli_query($connect, $sql)) {
                     $message = "Booking created successfully!";

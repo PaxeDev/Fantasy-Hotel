@@ -1,11 +1,10 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) { // if the session user and the session adm have no value
+if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
     header("Location: login.php");
-    exit(); // redirect the user to the home page
+    exit();
 }
-
 
 require_once "connection.php";
 $id = $_GET["id"];
@@ -22,6 +21,7 @@ if (mysqli_num_rows($result) == 1) {
 if (isset($_POST["update"])) {
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
+    $status = $_POST['status'];
 
     // Verify if the dates are valid
     if ($start_date > $end_date) {
@@ -30,7 +30,7 @@ if (isset($_POST["update"])) {
               </div>";
     } else {
         // Update booking record
-        $sql_update = "UPDATE bookings SET start_date = '$start_date', end_date = '$end_date' WHERE booking_id = $id";
+        $sql_update = "UPDATE bookings SET start_date = '$start_date', end_date = '$end_date', status = '$status' WHERE id_booking = $id";
         $result_update = mysqli_query($connect, $sql_update);
 
         if ($result_update) {
@@ -71,6 +71,14 @@ mysqli_close($connect);
             <div class="mb-3">
                 <label for="end_date">End Date</label>
                 <input type="date" class="form-control" style='width: 18rem;' id="end_date" name="end_date" value="<?= $row['end_date'] ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="status">Status</label>
+                <select class="form-control" style='width: 18rem;' id="status" name="status" required>
+                    <option value="accepted" <?= $row['status'] == 'accepted' ? 'selected' : '' ?>>Accepted</option>
+                    <option value="confirmed" <?= $row['status'] == 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
+                    <option value="cancelled" <?= $row['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                </select>
             </div>
             <input type="submit" class="btn btn-primary" name="update" value="Update Booking">
             <div class='d-flex justify-content-center'>
