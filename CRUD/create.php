@@ -13,6 +13,10 @@ if (isset($_SESSION["user"])) {
 require_once "../connection.php";
 require_once "../file_upload.php";
 
+$sql = "SELECT * FROM users WHERE id = {$_SESSION["admin"]}";
+$result = mysqli_query($connect, $sql);
+$row = mysqli_fetch_assoc($result);
+
 if (isset($_POST["create"])) {
     $room_name = $_POST["room_name"];
     $room_number = $_POST["room_number"];
@@ -54,10 +58,45 @@ if (isset($_POST["create"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Dish</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+    <style>
+        body {
+            padding-top: 70px;
+        }
+    </style>
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="../pictures/<?= $row["images"] ?>" alt="user pic" width="30" height="24">
+            </a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.php">Index</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.php#bookinglist">Booking List</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../dashboard.php">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../profile_update.php">Edit Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="create.php">Add new room</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../create_booking.php">Create a reservation</a>
+                </li>
+            </ul>
+
+            <div class="d-flex">
+                <a class="btn btn-danger" href="../logout.php?logout">Logout</a>
+            </div>
+        </div>
+    </nav>
     <div class="container">
         <h1>Create new room</h1>
         <form method="POST" enctype="multipart/form-data">

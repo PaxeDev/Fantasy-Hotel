@@ -14,7 +14,7 @@ $sql = "SELECT * FROM users WHERE id = {$_SESSION["user"]}";
 $result = mysqli_query($connect, $sql);
 $row = mysqli_fetch_assoc($result);
 
-$sqlR = "SELECT * FROM rooms /*WHERE available = 'yes'*/";
+$sqlR = "SELECT * FROM rooms";
 $resultR = mysqli_query($connect, $sqlR);
 
 $cards = "";
@@ -31,7 +31,6 @@ if (mysqli_num_rows($result) > 0) {
                    <p class='card-text'>Type: {$rowR["type"]}</p>
                    <a href='details.php?id={$rowR["room_id"]}' class='btn btn-success'>Details</a>
                    <a href='create_booking.php?id={$rowR["room_id"]}' class='btn btn-warning'>Booking</a>                  
-
                 </div>
            </div>
          </div>";
@@ -41,7 +40,7 @@ if (mysqli_num_rows($result) > 0) {
 }
 
 // Fetch user reservations
-$sqlReservations = "SELECT bookings.*, rooms.room_name, rooms.room_number 
+$sqlReservations = "SELECT bookings.*, rooms.room_name, rooms.room_number, rooms.price
                     FROM bookings 
                     JOIN rooms ON bookings.fk_rooms_id = rooms.room_id 
                     WHERE fk_users_id = $userId";
@@ -52,7 +51,26 @@ if (mysqli_num_rows($resultReservations) > 0) {
     while ($rowRes = mysqli_fetch_assoc($resultReservations)) {
         $start_date = date("d-m-Y", strtotime($rowRes["start_date"]));
         $end_date = date("d-m-Y", strtotime($rowRes["end_date"]));
-        $reservations .= "<div class='card mt-3 mx-2' style='width: 18rem;'>
+
+        // Calculate the number of nights
+        $startDate = new DateTime($rowRes["start_date"]);
+        $endDate = new DateTime($rowRes["end_date"]);
+        $interval = $startDate->diff($endDate);
+        $numberOfNights = $interval->days;
+
+        // Calculate the total price
+        $pricePerNight = $rowRes["price"];
+        $totalPrice = $pricePerNight * $numberOfNights;
+
+        $updateButton = $cancelButton = "";
+
+        // Conditionally show buttons based on status
+        if ($rowRes["status"] != "cancelled") {
+            $updateButton = "<a href='update_booking.php?id={$rowRes["id_booking"]}' class='btn btn-warning'>Update Booking</a>";
+            $cancelButton = "<a href='update_booking_status.php?id={$rowRes["id_booking"]}' class='btn btn-danger mt-3'>Cancel Booking</a>";
+        }
+
+        $reservations .= "<div class='card mt-3 mx-2 mb-3' style='width: 18rem;'>
             <div class='card-body'>
                 <h5 class='card-title'>Room: {$rowRes["room_name"]}</h5>
                 <p class='card-text'>Reservation Number: {$rowRes["id_booking"]}</p>
@@ -60,8 +78,9 @@ if (mysqli_num_rows($resultReservations) > 0) {
                 <p class='card-text'>Start Date: $start_date</p>
                 <p class='card-text'>End Date: $end_date</p>                
                 <p class='card-text'>Status: {$rowRes["status"]}</p>
-                <a href='update_booking.php?id={$rowRes["id_booking"]}' class='btn btn-warning'>Update Booking</a>
-                <a href='update_booking_status.php?id={$rowRes["id_booking"]}' class='btn btn-danger mt-3'>Cancell Booking</a>
+                <p class='card-text'>Total Price: $totalPrice €</p>
+                $updateButton
+                $cancelButton
             </div>
         </div>";
     }
@@ -78,31 +97,37 @@ if (mysqli_num_rows($resultReservations) > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome <?= $row["first_name"] ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        body {
+            padding-top: 70px;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">
-                    <img src="pictures/<?= $row["images"] ?>" alt="user pic" width="30" height="24">
-                </a>
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="home.php">Rooms</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile_update.php">Edit Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#reservations">Reservations</a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <a class="btn btn-danger" href="logout.php?logout">Logout</a>
-                </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="pictures/<?= $row["images"] ?>" alt="user pic" width="30" height="24">
+            </a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="home.php">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#reservations">Reservations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="profile_update.php">Edit Profile</a>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <a class="btn btn-danger" href="logout.php?logout">Logout</a>
             </div>
-        </nav>
+        </div>
+    </nav>
+    <div class="container">
         <h2 class="text-center">Welcome <?= $row["first_name"] . " " . $row["last_name"] ?></h2>
         <div class="container mt-5">
             <h1 class="mt-5">Book your room</h1>

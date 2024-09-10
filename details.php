@@ -41,7 +41,7 @@ $layout = "<div>
                         <p class='card-text'>Details:  {$row["Details"]} </p>
                         <p class='card-text'><small class='text-body-secondary'>Type:  {$row["type"]} </small></p>
                         <p class='card-text'><small class='text-body-secondary'>Price:  {$row["price"]} €</small></p>
-
+                        <a href='create_booking.php?id={$row["room_id"]}' class='btn btn-warning'>Booking</a>
                     </div>
                 </div>
             </div>
@@ -63,25 +63,25 @@ $layout = "<div>
 </head>
 
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">
-                    <img src="pictures/<?= $row_user["images"] ?>" alt="user pic" width="30" height="24">
-                </a>
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="home.php">Rooms</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile_update.php">Edit Profile</a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <a class="btn btn-danger" href="logout.php?logout">Logout</a>
-                </div>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="pictures/<?= $row_user["images"] ?>" alt="user pic" width="30" height="24">
+            </a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="home.php">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="profile_update.php">Edit Profile</a>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <a class="btn btn-danger" href="logout.php?logout">Logout</a>
             </div>
-    </div>
+        </div>
+
     </nav>
     <div class="container">
         <?= $layout ?>
