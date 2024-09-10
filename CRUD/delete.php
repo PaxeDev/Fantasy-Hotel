@@ -50,10 +50,12 @@ if (isset($_GET["id"])) {
     </head>
 
     <body>
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Are you sure you want to remove the room number <?= $row["room_number"] ?></strong>
-            <a href="delete.php?id=<?= $row["room_id"] ?>&delete=true" class="btn btn-danger">Yes</a>
-            <a href="index.php" class="btn btn-secondary">No</a>
+        <div class="container mt-3">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Are you sure you want to remove the room number <?= $row["room_number"] ?></strong>
+                <a href="delete.php?id=<?= $row["room_id"] ?>&delete=true" class="btn btn-danger">Yes</a>
+                <a href="index.php" class="btn btn-secondary">No</a>
+            </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </body>

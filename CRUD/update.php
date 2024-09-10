@@ -39,7 +39,7 @@ if (isset($_POST["update"])) {
 
     if (mysqli_query($connect, $sql)) {
         echo "<div class='alert alert-success' role='alert'>
-        product has been updated, {$picture[1]}
+        Room has been updated, {$picture[1]}
       </div>";
         header("refresh: 3; url= index.php");
     } else {
@@ -80,7 +80,7 @@ mysqli_close($connect);
             </div>
             <div class="mb-3">
                 <label for="Details" class="form-label">Details</label>
-                <input type="text" class="form-control" id="Details" aria-describedby="Details" name="Details" value="<?= $row["Details"] ?>">
+                <textarea type="text" class="form-control" id="Details" aria-describedby="Details" name="Details"><?= $row["Details"] ?></textarea>
             </div>
             <div class="mb-3">
                 <label for="type" class="form-label">Type</label>

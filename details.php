@@ -1,57 +1,58 @@
 <?php
 session_start();
-//protect the page from ppl who play in url
-
+// Protect the page from unauthorized access
 if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
-    header("Location:login.php");
+    header("Location: login.php");
     exit();
 }
-if (isset($_SESSION["admin"])) {
-    header("Location: ../index.php");
-    exit();
-}
-
 
 require_once "connection.php";
-$sql_user = "SELECT * FROM users WHERE id = {$_SESSION["user"]}";
-$result_user = mysqli_query($connect, $sql_user);
-$row_user = mysqli_fetch_assoc($result_user);
 
+$isAdmin = isset($_SESSION["admin"]);
+$isUser = isset($_SESSION["user"]);
+
+if ($isUser) {
+    $sql_user = "SELECT * FROM users WHERE id = {$_SESSION["user"]}";
+    $result_user = mysqli_query($connect, $sql_user);
+    $row_user = mysqli_fetch_assoc($result_user);
+} else {
+    $sql_user = "SELECT * FROM users WHERE id = {$_SESSION["admin"]}";
+    $result_user = mysqli_query($connect, $sql_user);
+    $row_user = mysqli_fetch_assoc($result_user);
+}
 $id = $_GET["id"];
-
-$sql = "SELECT * FROM `rooms` WHERE room_id = $id";
-
+$sql = "SELECT * FROM rooms WHERE room_id = $id";
 $result = mysqli_query($connect, $sql);
-
-# ussing fetch_assoc bring only one record 
-
 $row = mysqli_fetch_assoc($result);
 
-# echo var_dump($row);
+// Determine if the book button should be displayed
+$bookButton = $isAdmin ? "" : "<a href='create_booking.php?id={$row["room_id"]}' class='btn btn-warning'>Book</a>";
+
 $layout = "<div>
-        <div class='card mx-auto bg-primary-subtle my-3' style='max-width: 100%;'>
-            <div class='row g-0'>
-                <div class='col-md-4'>
-                    <img src='../pictures/{$row["picture"]} ' class='img-fluid rounded-start' alt='...'>
-                </div>
-                <div class='col-md-8'>
-                    <div class='card-body'>
-                        <h5 class='card-title'>Room Name: {$row["room_name"]} </h5>
-                        <h6 class='card-title'>Room Number: {$row["room_number"]} </h6>
-                        <p class='card-text'>Details:  {$row["Details"]} </p>
-                        <p class='card-text'><small class='text-body-secondary'>Type:  {$row["type"]} </small></p>
-                        <p class='card-text'><small class='text-body-secondary'>Price:  {$row["price"]} €</small></p>
-                        <a href='create_booking.php?id={$row["room_id"]}' class='btn btn-warning'>Booking</a>
-                    </div>
+    <div class='card mx-auto bg-primary-subtle my-3' style='max-width: 100%;'>
+        <div class='row g-0'>
+            <div class='col-md-4'>
+                <img src='../pictures/{$row["picture"]}' class='img-fluid rounded-start' alt='...'>
+            </div>
+            <div class='col-md-8'>
+                <div class='card-body'>
+                    <h5 class='card-title'>Room Name: {$row["room_name"]}</h5>
+                    <h6 class='card-title'>Room Number: {$row["room_number"]}</h6>
+                    <p class='card-text'>Details: {$row["Details"]}</p>
+                    <p class='card-text'><small class='text-body-secondary'>Type: {$row["type"]}</small></p>
+                    <p class='card-text'><small class='text-body-secondary'>Price: {$row["price"]} €</small></p>
+                    $bookButton
                 </div>
             </div>
         </div>
     </div>
-    <div class= 'd-flex justify-content-center'>
-                         <a href='home.php' class='btn btn-secondary text-center'>Go Back</a>
-                         </div>
-    "
+</div>
+<div class='d-flex justify-content-center'>
+    <a href='home.php' class='btn btn-secondary text-center'>Go Back</a>
+</div>";
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -70,18 +71,38 @@ $layout = "<div>
                 <img src="pictures/<?= $row_user["images"] ?>" alt="user pic" width="30" height="24">
             </a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="home.php">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="profile_update.php">Edit Profile</a>
-                </li>
+                <?php if ($isAdmin): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Index</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#bookinglist">Booking List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dashboard.php">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../profile_update.php">Edit Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="create.php">Add new room</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../create_booking_admin.php">Create a reservation</a>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile_update.php">Edit Profile</a>
+                    </li>
+                <?php endif; ?>
             </ul>
             <div class="d-flex">
                 <a class="btn btn-danger" href="logout.php?logout">Logout</a>
             </div>
         </div>
-
     </nav>
     <div class="container">
         <?= $layout ?>

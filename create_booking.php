@@ -18,7 +18,7 @@ if (isset($_SESSION["admin"])) {
         "Booking List" => "CRUD/index.php#bookinglist",
         "Dashboard" => "dashboard.php",
         "Edit Profile" => "profile_update.php",
-        "Add Room" => "CRUD/create.php",
+        "Add new room" => "CRUD/create.php",
         "Create a reservation" => "create_booking.php"
     ];
 } else {
@@ -59,13 +59,26 @@ if (isset($_POST["submit"]) || isset($_POST["book"])) {
     if ($start_date > $end_date) {
         $errors[] = "Start date cannot be later than end date.";
     }
+    if ($start_date == $end_date) {
+        $errors[] = "You should book at least one night.";
+    }
     if (strtotime($start_date) > strtotime('+2 years', strtotime($today))) {
         $errors[] = "You cannot book a room more than 2 years in advance.";
     }
 
     if (empty($errors)) {
         // Check for date conflicts
-        $conflict_sql = "SELECT * FROM bookings WHERE fk_rooms_id = '$room_id' AND ('$start_date' BETWEEN start_date AND end_date OR '$end_date' BETWEEN start_date AND end_date OR start_date BETWEEN '$start_date' AND '$end_date' OR end_date BETWEEN '$start_date' AND '$end_date')";
+        $conflict_sql = "
+        SELECT * FROM bookings 
+        WHERE fk_rooms_id = '$room_id' 
+        AND status != 'cancelled'
+        AND (
+            ('$start_date' BETWEEN start_date AND end_date)
+            OR ('$end_date' BETWEEN start_date AND end_date)
+            OR (start_date BETWEEN '$start_date' AND '$end_date')
+            OR (end_date BETWEEN '$start_date' AND '$end_date')
+        )
+    ";
         $conflict_result = mysqli_query($connect, $conflict_sql);
 
         if (mysqli_num_rows($conflict_result) > 0) {
@@ -73,7 +86,7 @@ if (isset($_POST["submit"]) || isset($_POST["book"])) {
         } else {
             // Insert booking record
             $sql = "INSERT INTO bookings (fk_rooms_id, fk_users_id, start_date, end_date, status) 
-                    VALUES ('$room_id', '$user_id', '$start_date', '$end_date', 'accepted')";
+                VALUES ('$room_id', '$user_id', '$start_date', '$end_date', 'accepted')";
             if (mysqli_query($connect, $sql)) {
                 $message = "Booking created successfully!";
                 header("refresh: 3; url={$backTo}");

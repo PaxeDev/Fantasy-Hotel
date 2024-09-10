@@ -34,7 +34,7 @@ if (mysqli_num_rows($resultRooms) > 0) {
                     <p>Price: {$rowRoom["price"]}€/night</p>
                 </div>
                 <div class='ms-auto'>
-                    <a href='details.php?id={$rowRoom["room_id"]}' class='btn btn-success btn-sm'>Details</a>
+                    <a href='../details.php?id={$rowRoom["room_id"]}' class='btn btn-success btn-sm'>Details</a>
                     <a href='update.php?id={$rowRoom["room_id"]}' class='btn btn-warning btn-sm'>Update Room</a>
                     <a href='delete.php?id={$rowRoom["room_id"]}' class='btn btn-danger btn-sm'>Delete</a>
                 </div>
@@ -45,10 +45,20 @@ if (mysqli_num_rows($resultRooms) > 0) {
     $roomList = "<p>No rooms found</p>";
 }
 
-$sqlBookings = "SELECT bookings.*, rooms.room_name, rooms.room_number, users.first_name, users.last_name 
-                FROM bookings 
-                JOIN rooms ON bookings.fk_rooms_id = rooms.room_id 
-                JOIN users ON bookings.fk_users_id = users.id";
+$sqlBookings = "
+    SELECT bookings.*, rooms.room_name, rooms.room_number, users.first_name, users.last_name 
+    FROM bookings 
+    JOIN rooms ON bookings.fk_rooms_id = rooms.room_id 
+    JOIN users ON bookings.fk_users_id = users.id 
+    ORDER BY 
+        CASE 
+            WHEN bookings.status = 'accepted' THEN 1 
+            WHEN bookings.status = 'confirmed' THEN 2 
+            WHEN bookings.status = 'cancelled' THEN 3 
+            ELSE 4 
+        END, 
+        bookings.start_date ASC
+";
 $resultBookings = mysqli_query($connect, $sqlBookings);
 
 $bookingList = "";
@@ -56,28 +66,38 @@ if (mysqli_num_rows($resultBookings) > 0) {
     while ($rowBooking = mysqli_fetch_assoc($resultBookings)) {
         $start_date = date("d-m-Y", strtotime($rowBooking["start_date"]));
         $end_date = date("d-m-Y", strtotime($rowBooking["end_date"]));
+
+        // Generar la lista de reservas
         $bookingList .= "<li class='list-group-item'>
             <div class='d-flex justify-content-between'>
                 <div>
+                    <h4>Booking Number: {$rowBooking["id_booking"]}</h4>
                     <h5>Room: {$rowBooking["room_name"]}</h5>
                     <p>Room Number: {$rowBooking["room_number"]}</p>
                     <p>Booking dates: $start_date to $end_date</p>
                     <p>Reserved by: {$rowBooking["first_name"]} {$rowBooking["last_name"]}</p>
-                    <p>Status: {$rowBooking["status"]}</p>
-                    <p>Booking Number: {$rowBooking["id_booking"]}</p>
+                    <p>Status: {$rowBooking["status"]}</p>                    
                 </div>
                 <div class='text-end'>
-                    <a href='../update_booking.php?id={$rowBooking["id_booking"]}' class='btn btn-warning btn-sm'>Update Booking</a>
-                    <a href='../delete_booking.php?id={$rowBooking["id_booking"]}' class='btn btn-danger btn-sm'>Delete Booking</a>
-                    <a href='../update_booking_status.php?id={$rowBooking["id_booking"]}&status=confirmed' class='btn btn-success btn-sm'>Confirm</a>
-                    <a href='../update_booking_status.php?id={$rowBooking["id_booking"]}&status=cancelled' class='btn btn-secondary btn-sm'>Cancel</a>
-                </div>
-            </div>
-        </li>";
+                    <a href='../update_booking.php?id={$rowBooking["id_booking"]}' class='btn btn-warning btn-sm'>Update Booking</a><br>
+                    <a href='../delete_booking.php?id={$rowBooking["id_booking"]}' class='btn btn-danger btn-sm mt-3'>Delete Booking</a><br>";
+
+        // Mostrar el botón Confirm solo si el estado no es "confirmed"
+        if ($rowBooking["status"] !== 'confirmed') {
+            $bookingList .= "<a href='../update_booking_status.php?id={$rowBooking["id_booking"]}&status=confirmed' class='btn btn-success btn-sm mt-3'>Confirm</a><br>";
+        }
+
+        // Mostrar el botón Cancel solo si el estado no es "cancelled"
+        if ($rowBooking["status"] !== 'cancelled') {
+            $bookingList .= "<a href='../update_booking_status.php?id={$rowBooking["id_booking"]}&status=cancelled' class='btn btn-secondary btn-sm mt-3'>Cancel</a><br>";
+        }
+
+        $bookingList .= "</div></div></li>";
     }
 } else {
     $bookingList = "<p>No bookings found</p>";
 }
+
 
 mysqli_close($connect);
 ?>

@@ -5,7 +5,7 @@ if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) { // if the session
     exit(); // redirect the user to the home page
 }
 if (isset($_SESSION["admin"])) { // if a session "adm" is exist and have a value
-    header("Location: dashboard.php");
+    header("Location: CRUD/index.php");
     exit(); // redirect the admin to the dashboard page
 }
 require_once "connection.php";
@@ -30,7 +30,7 @@ if (mysqli_num_rows($result) > 0) {
                    <p class='card-text'>Price: {$rowR["price"]}€/night</p>
                    <p class='card-text'>Type: {$rowR["type"]}</p>
                    <a href='details.php?id={$rowR["room_id"]}' class='btn btn-success'>Details</a>
-                   <a href='create_booking.php?id={$rowR["room_id"]}' class='btn btn-warning'>Booking</a>                  
+                   <a href='create_booking.php?id={$rowR["room_id"]}' class='btn btn-warning'>Book</a>                  
                 </div>
            </div>
          </div>";
@@ -67,7 +67,7 @@ if (mysqli_num_rows($resultReservations) > 0) {
         // Conditionally show buttons based on status
         if ($rowRes["status"] != "cancelled") {
             $updateButton = "<a href='update_booking.php?id={$rowRes["id_booking"]}' class='btn btn-warning'>Update Booking</a>";
-            $cancelButton = "<a href='update_booking_status.php?id={$rowRes["id_booking"]}' class='btn btn-danger mt-3'>Cancel Booking</a>";
+            $cancelButton = "<a href='update_booking_status.php?id={$rowRes["id_booking"]}' class='btn btn-danger mt-3'>Cancel Book</a>";
         }
 
         $reservations .= "<div class='card mt-3 mx-2 mb-3' style='width: 18rem;'>
