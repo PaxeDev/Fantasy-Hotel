@@ -74,18 +74,27 @@ mysqli_close($connect);
         body {
             padding-top: 70px;
         }
+
+        body {
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            /* justify-content: center;
+            align-items: center; */
+        }
     </style>
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand">
                 <img src="../pictures/<?= $row["images"] ?>" alt="user pic" width="30" height="24">
             </a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="CRUD/index.php">Index</a>
+                    <a class="nav-link" href="CRUD/index.php">Index</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="CRUD/index.php#bookinglist">Booking List</a>
@@ -110,7 +119,7 @@ mysqli_close($connect);
     </nav>
 
     <div class="container mt-5">
-        <h2 class="text-center">Welcome <?= $row["first_name"] . " " . $row["last_name"] ?></h2>
+        <h2 class="text-center fs-1 fw-bold mt-5 text-light">Welcome <?= $row["first_name"] . " " . $row["last_name"] ?></h2>
 
         <div class="container mt-4">
             <h3>Users</h3>

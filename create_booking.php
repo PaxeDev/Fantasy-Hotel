@@ -7,8 +7,6 @@ if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
 }
 require_once "connection.php";
 
-// Protect the page from unauthorized access
-
 
 if (isset($_SESSION["admin"])) {
     $session = $_SESSION["admin"];
@@ -25,8 +23,9 @@ if (isset($_SESSION["admin"])) {
     $session = $_SESSION["user"];
     $backTo = "home.php";
     $navbarLinks = [
-        "Rooms" => "home.php",
-        "Edit Profile" => "profile_update.php",
+        "Home" => "home.php",
+        "Reservations" => "home.php#reservations",
+        "Edit Profile" => "profile_update.php"
     ];
 }
 
@@ -34,16 +33,13 @@ $errors = [];
 $message = $room_id = $user_id = $start_date = $end_date = "";
 $isAdmin = isset($_SESSION["admin"]);
 
-// Handle form submission
 if (isset($_POST["submit"]) || isset($_POST["book"])) {
     if ($isAdmin) {
-        // Admin booking
         $room_id = $_POST['room_id'];
         $user_id = $_POST['user_id'];
         $start_date = $_POST['start_date'];
         $end_date = $_POST['end_date'];
     } else {
-        // User booking
         $room_id = $_GET['id'];
         $user_id = $_SESSION['user'];
         $start_date = $_POST['start_date'];
@@ -52,7 +48,6 @@ if (isset($_POST["submit"]) || isset($_POST["book"])) {
 
     $today = date("Y-m-d");
 
-    // Validate dates
     if ($start_date < $today) {
         $errors[] = "The start date cannot be before today.";
     }
@@ -67,7 +62,6 @@ if (isset($_POST["submit"]) || isset($_POST["book"])) {
     }
 
     if (empty($errors)) {
-        // Check for date conflicts
         $conflict_sql = "
         SELECT * FROM bookings 
         WHERE fk_rooms_id = '$room_id' 
@@ -84,7 +78,6 @@ if (isset($_POST["submit"]) || isset($_POST["book"])) {
         if (mysqli_num_rows($conflict_result) > 0) {
             $errors[] = "These dates are already booked. Please choose different dates.";
         } else {
-            // Insert booking record
             $sql = "INSERT INTO bookings (fk_rooms_id, fk_users_id, start_date, end_date, status) 
                 VALUES ('$room_id', '$user_id', '$start_date', '$end_date', 'accepted')";
             if (mysqli_query($connect, $sql)) {
@@ -98,8 +91,6 @@ if (isset($_POST["submit"]) || isset($_POST["book"])) {
 }
 
 if ($isAdmin) {
-    // Admin view setup
-
     $sql = "SELECT * FROM users WHERE id = {$_SESSION['admin']}";
     $result = mysqli_query($connect, $sql);
     if (!$result) {
@@ -112,7 +103,6 @@ if ($isAdmin) {
     $sql_users = "SELECT * FROM users";
     $result_users = mysqli_query($connect, $sql_users);
 
-    // Prepare the room and user options for the select elements
     $roomOptions = "";
     while ($room = mysqli_fetch_assoc($result_rooms)) {
         $selected = $room_id == $room['room_id'] ? "selected" : "";
@@ -125,7 +115,6 @@ if ($isAdmin) {
         $userOptions .= "<option value='{$user['id']}' $selected>{$user['first_name']} {$user['last_name']}</option>";
     }
 } else {
-    // User view setup
     $sql = "SELECT * FROM users WHERE id = {$_SESSION['user']}";
     $result = mysqli_query($connect, $sql);
     if (!$result) {
@@ -153,10 +142,31 @@ mysqli_close($connect);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $isAdmin ? 'Create Booking' : 'Book Room' ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .card-img-top {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <img src="pictures/<?= $row["images"] ?? '' ?>" alt="user pic" width="30" height="24">
@@ -174,7 +184,7 @@ mysqli_close($connect);
         </div>
     </nav>
     <div class="container mt-5">
-        <h2><?= $isAdmin ? 'Create Booking' : 'Book Room: ' . htmlspecialchars($rowR["room_name"]) ?></h2>
+        <h2 class="text-center fs-1 fw-bold my-5"><?= $isAdmin ? 'Create Booking' : 'Book Room: ' . htmlspecialchars($rowR["room_name"]) ?></h2>
         <?= !empty($errors) ? "<div class='alert alert-danger'>" . implode("<br>", $errors) . "</div>" : '' ?>
         <?= $message ? "<div class='alert alert-success'><p>$message You will be redirected in <span id='timer'>3</span> seconds!</p></div>" : '' ?>
         <form method="POST" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) . ($isAdmin ? '' : "?id=$id") ?>" class="w-50 mx-auto">
@@ -194,9 +204,9 @@ mysqli_close($connect);
                     </select>
                 </div>
             <?php else : ?>
-                <div>
+                <div class='d-flex justify-content-center'>
                     <div class='card' style='width: 18rem;'>
-                        <img src='pictures/<?= htmlspecialchars($rowR["picture"]) ?>' class='card-img-top' alt='...'>
+                        <img src='pictures/<?= htmlspecialchars($rowR["picture"]) ?>' class='card-img-top' alt='Room Image'>
                     </div>
                 </div>
             <?php endif; ?>

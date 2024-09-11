@@ -8,6 +8,38 @@ if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
 }
 
 require_once "connection.php";
+$sessionUserId = isset($_SESSION["user"]) ? $_SESSION["user"] : $_SESSION["admin"];
+$sqlSessionUser = "SELECT * FROM users WHERE id = $sessionUserId";
+$resultSessionUser = mysqli_query($connect, $sqlSessionUser);
+if (!$resultSessionUser || mysqli_num_rows($resultSessionUser) === 0) {
+    die("Error fetching session user details: " . mysqli_error($connect));
+}
+$sessionUser = mysqli_fetch_assoc($resultSessionUser);
+
+if (isset($_SESSION["admin"])) {
+    $session = $_SESSION["admin"];
+    $backTo = "dashboard.php";
+    $navbarLinks = [
+        "Index" => "CRUD/index.php",
+        "Booking List" => "CRUD/index.php#bookinglist",
+        "Dashboard" => "dashboard.php",
+        "Edit Profile" => "profile_update.php",
+        "Add new room" => "CRUD/create.php",
+        "Create a reservation" => "create_booking.php"
+    ];
+    $id = isset($_GET["id"]) && is_numeric($_GET["id"]) ? $_GET["id"] : $session;
+} else {
+    $session = $_SESSION["user"];
+    $id = $session;
+    $backTo = "home.php";
+    $navbarLinks = [
+        "Home" => "home.php",
+        "Reservations" => "home.php#reservations",
+        "Edit Profile" => "profile_update.php"
+
+    ];
+}
+
 
 $id = $_GET["id"];
 $sql = "SELECT * FROM bookings WHERE id_booking = $id";
@@ -79,27 +111,57 @@ mysqli_close($connect);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Booking</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="pictures/<?= $sessionUser["images"] ?>" alt="user pic" width="30" height="24">
+            </a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <?php foreach ($navbarLinks as $label => $url) : ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?= $label === "Edit Profile" ? "active" : "" ?>" href="<?= $url ?>"><?= $label ?></a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <div class="d-flex">
+                <a class="btn btn-danger" href="logout.php?logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
         <?php if (isset($error_message)) echo $error_message; ?>
         <?php if (isset($success_message)) echo $success_message; ?>
 
         <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?id=" . $id ?>" class="w-50 mx-auto">
-            <h2 class="mb-3">Update Booking</h2>
+            <h2 class="mb-3 d-flex justify-content-center fs-1 fw-bold">Update Booking</h2>
             <div class="mb-3">
-                <label for="start_date">Start Date</label>
+                <label for="start_date" class="fw-semibold fs-4">Start Date</label>
                 <input type="date" class="form-control" style='width: 18rem;' id="start_date" name="start_date" value="<?= $row['start_date'] ?>" required>
             </div>
             <div class="mb-3">
-                <label for="end_date">End Date</label>
+                <label for="end_date" class="fw-semibold fs-4">End Date</label>
                 <input type="date" class="form-control" style='width: 18rem;' id="end_date" name="end_date" value="<?= $row['end_date'] ?>" required>
             </div>
             <?php echo $status_options; ?>
+
             <input type="submit" class="btn btn-primary" name="update" value="Update Booking">
             <div class='d-flex justify-content-center'>
-                <a href='CRUD/index.php' class='btn btn-secondary text-center'>Go Back</a>
+                <a href='CRUD/index.php' class='btn btn-secondary'>Go Back</a>
             </div>
         </form>
     </div>

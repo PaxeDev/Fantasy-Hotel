@@ -1,12 +1,12 @@
 <?php
 session_start();
-if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) { // if the session user and the session adm have no value
+if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
     header("Location: login.php");
-    exit(); // redirect the user to the home page
+    exit();
 }
-if (isset($_SESSION["admin"])) { // if a session "adm" is exist and have a value
+if (isset($_SESSION["admin"])) {
     header("Location: CRUD/index.php");
-    exit(); // redirect the admin to the dashboard page
+    exit();
 }
 require_once "connection.php";
 $userId = $_SESSION["user"];
@@ -21,9 +21,9 @@ $cards = "";
 
 if (mysqli_num_rows($result) > 0) {
     while ($rowR = mysqli_fetch_assoc($resultR)) {
-        $cards .= "<div>
-               <div class='card mt-3' style='width: 18rem;'>
-                   <img src='../pictures/{$rowR["picture"]}' class='card-img-top' alt='...'>
+        $cards .= "
+               <div class='card mt-3 mx-2 mb-3 p-0' style='width: 18rem;'>       
+                   <img src='../pictures/{$rowR["picture"]}' class='card-img-top'>
                    <div class='card-body'>
                    <h5 class='card-title'>{$rowR["room_name"]}</h5>
                    <p class='card-text'>Number room: {$rowR["room_number"]}</p>
@@ -32,14 +32,12 @@ if (mysqli_num_rows($result) > 0) {
                    <a href='details.php?id={$rowR["room_id"]}' class='btn btn-success'>Details</a>
                    <a href='create_booking.php?id={$rowR["room_id"]}' class='btn btn-warning'>Book</a>                  
                 </div>
-           </div>
-         </div>";
+           </div>";
     }
 } else {
     $cards = "<p>No results found</p>";
 }
 
-// Fetch user reservations
 $sqlReservations = "SELECT bookings.*, rooms.room_name, rooms.room_number, rooms.price
                     FROM bookings 
                     JOIN rooms ON bookings.fk_rooms_id = rooms.room_id 
@@ -52,19 +50,16 @@ if (mysqli_num_rows($resultReservations) > 0) {
         $start_date = date("d-m-Y", strtotime($rowRes["start_date"]));
         $end_date = date("d-m-Y", strtotime($rowRes["end_date"]));
 
-        // Calculate the number of nights
         $startDate = new DateTime($rowRes["start_date"]);
         $endDate = new DateTime($rowRes["end_date"]);
         $interval = $startDate->diff($endDate);
         $numberOfNights = $interval->days;
 
-        // Calculate the total price
         $pricePerNight = $rowRes["price"];
         $totalPrice = $pricePerNight * $numberOfNights;
 
         $updateButton = $cancelButton = "";
 
-        // Conditionally show buttons based on status
         if ($rowRes["status"] != "cancelled") {
             $updateButton = "<a href='update_booking.php?id={$rowRes["id_booking"]}' class='btn btn-warning'>Update Booking</a>";
             $cancelButton = "<a href='update_booking_status.php?id={$rowRes["id_booking"]}' class='btn btn-danger mt-3'>Cancel Book</a>";
@@ -101,6 +96,11 @@ if (mysqli_num_rows($resultReservations) > 0) {
         body {
             padding-top: 70px;
         }
+
+        body {
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            background-repeat: no-repeat;
+        }
     </style>
 </head>
 
@@ -128,15 +128,15 @@ if (mysqli_num_rows($resultReservations) > 0) {
         </div>
     </nav>
     <div class="container">
-        <h2 class="text-center">Welcome <?= $row["first_name"] . " " . $row["last_name"] ?></h2>
+        <h2 class="text-center fs-1 fw-bold mt-5 text-light">Welcome <?= $row["first_name"] . " " . $row["last_name"] ?></h2>
         <div class="container mt-5">
-            <h1 class="mt-5">Book your room</h1>
+            <h1 class="mt-5 mb-5 text-center">Book your room</h1>
             <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 row-cols-xs-1">
                 <?= $cards ?>
             </div>
         </div>
         <div class="container mt-5" id="reservations">
-            <h1 class="mt-5">Your Reservations</h1>
+            <h1 class="mt-5 text-center mb-5">Your Reservations</h1>
             <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 row-cols-xs-1">
                 <?= $reservations ?>
             </div>

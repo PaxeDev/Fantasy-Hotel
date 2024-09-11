@@ -62,22 +62,36 @@ if (isset($_POST["login"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container w-50 mx-auto">
-        <h1 class="text-center">Login Page</h1>
-        <form method="post" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" autocomplete="off">
+    <div class="position-absolute top-0 start-50 translate-middle-x mt-5">
+        <h1 class="text-center fs-2 fw-bold text-light">WELCOME FANTASY HOTEL</h1>
+    </div>
+    <div class="container position-absolute top-50 start-50 translate-middle">
+        <h2 class="text-center fs-2 fw-bold">Login Page</h2>
+        <form method="post" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" autocomplete="off" class="w-50 mx-auto ">
             <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
+                <label for="email" class="form-label fw-semibold fs-4">Email address</label>
                 <input type="email" class="form-control" id="email" aria-describedby="email" name="email" placeholder="Email address" value="<?= $email ?>">
                 <p class="text-danger"><?= $email_error ?></p>
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
+                <label for="password" class="form-label fw-semibold fs-4">Password</label>
                 <input type="password" class="form-control" id="password" name="password">
                 <p class="text-danger"><?= $password_error ?></p>
-                <button type="submit" class="btn btn-primary mt-3" name="login">Login</button> or <a class='link-opacity-100 mt-3' href='register.php'>Create a new account</a>
+                <button type="submit" class="btn btn-primary mt-3" name="login">Login</button>
+                <div>or <a class='link-opacity-100 mt-3' href='register.php'>Create a new account</a></div>
             </div>
         </form>
     </div>

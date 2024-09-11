@@ -83,7 +83,7 @@ if (mysqli_num_rows($resultBookings) > 0) {
                     <a href='../delete_booking.php?id={$rowBooking["id_booking"]}' class='btn btn-danger btn-sm mt-3'>Delete Booking</a><br>";
 
         // Mostrar el botón Confirm solo si el estado no es "confirmed"
-        if ($rowBooking["status"] !== 'confirmed') {
+        if ($rowBooking["status"] !== 'confirmed' && $rowBooking["status"] !== 'cancelled') {
             $bookingList .= "<a href='../update_booking_status.php?id={$rowBooking["id_booking"]}&status=confirmed' class='btn btn-success btn-sm mt-3'>Confirm</a><br>";
         }
 
@@ -113,11 +113,15 @@ mysqli_close($connect);
         body {
             padding-top: 70px;
         }
+
+        body {
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            background-repeat: no-repeat;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Navigation bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
@@ -140,7 +144,7 @@ mysqli_close($connect);
                     <a class="nav-link" href="create.php">Add new room</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../create_booking_admin.php">Create a reservation</a>
+                    <a class="nav-link" href="../create_booking.php">Create a reservation</a>
                 </li>
             </ul>
 

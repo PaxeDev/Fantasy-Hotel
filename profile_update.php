@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Redirigir a la página de login si no hay sesión
 if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
     header("Location: login.php");
     exit();
@@ -10,7 +9,6 @@ if (!isset($_SESSION["user"]) && !isset($_SESSION["admin"])) {
 require_once "connection.php";
 require_once "file_upload.php";
 
-// Obtener el usuario en sesión para la imagen de la navbar
 $sessionUserId = isset($_SESSION["user"]) ? $_SESSION["user"] : $_SESSION["admin"];
 $sqlSessionUser = "SELECT * FROM users WHERE id = $sessionUserId";
 $resultSessionUser = mysqli_query($connect, $sqlSessionUser);
@@ -19,9 +17,7 @@ if (!$resultSessionUser || mysqli_num_rows($resultSessionUser) === 0) {
 }
 $sessionUser = mysqli_fetch_assoc($resultSessionUser);
 
-// Verificar si es administrador o usuario normal
 if (isset($_SESSION["admin"])) {
-    // Administrador puede editar cualquier perfil
     $session = $_SESSION["admin"];
     $backTo = "dashboard.php";
     $navbarLinks = [
@@ -32,12 +28,10 @@ if (isset($_SESSION["admin"])) {
         "Add new room" => "CRUD/create.php",
         "Create a reservation" => "create_booking.php"
     ];
-    // Si hay un id en la URL, es un administrador editando otro perfil
     $id = isset($_GET["id"]) && is_numeric($_GET["id"]) ? $_GET["id"] : $session;
 } else {
-    // Usuario normal editando su propio perfil, ignorar el ID en la URL si es usuario normal
     $session = $_SESSION["user"];
-    $id = $session; // El usuario solo puede editar su propio perfil
+    $id = $session;
     $backTo = "home.php";
     $navbarLinks = [
         "Home" => "home.php",
@@ -47,7 +41,6 @@ if (isset($_SESSION["admin"])) {
     ];
 }
 
-// Obtener datos del usuario a editar
 $sql = "SELECT * FROM users WHERE id = $id";
 $result = mysqli_query($connect, $sql);
 if (!$result || mysqli_num_rows($result) === 0) {
@@ -56,7 +49,6 @@ if (!$result || mysqli_num_rows($result) === 0) {
 }
 $row = mysqli_fetch_assoc($result);
 
-// Manejar la actualización del perfil
 $error = false;
 $first_name = $last_name = $date_of_birth = $email = $picture = "";
 $first_name_error = $last_name_error = $date_of_birth_error = $email_error = $picture_error = "";
@@ -68,7 +60,6 @@ if (isset($_POST["edit"])) {
     $date_of_birth = cleanInput($_POST["date_of_birth"]);
     $picture = fileUpload($_FILES["picture"]);
 
-    // Validaciones de los campos
     if (empty($fname)) {
         $error = true;
         $first_name_error = "First name cannot be empty!";
@@ -96,7 +87,6 @@ if (isset($_POST["edit"])) {
         $date_of_birth_error = "Date of birth cannot be empty!";
     }
 
-    // Validar el email
     if (empty($email)) {
         $error = true;
         $email_error = "Email cannot be empty!";
@@ -104,7 +94,6 @@ if (isset($_POST["edit"])) {
         $error = true;
         $email_error = "Please, type a valid email";
     } else {
-        // Verificar si el email ya existe en otro usuario
         $sqlEmailCheck = "SELECT id FROM users WHERE email = '$email' AND id != $id";
         $emailResult = mysqli_query($connect, $sqlEmailCheck);
         if (mysqli_num_rows($emailResult) > 0) {
@@ -113,12 +102,10 @@ if (isset($_POST["edit"])) {
         }
     }
 
-    // Si no hay errores, actualizar el perfil
     if (!$error) {
         if ($_FILES["picture"]["error"] == 4) {
             $sqlUpdate = "UPDATE users SET first_name = '$fname', last_name = '$lname', date_of_birth = '$date_of_birth', email = '$email' WHERE id = $id";
         } else {
-            // Eliminar imagen anterior si no es el avatar por defecto
             if ($row["images"] != 'avatar.png') {
                 unlink("pictures/" . $row["images"]);
             }
@@ -145,11 +132,20 @@ mysqli_close($connect);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <img src="pictures/<?= $sessionUser["images"] ?>" alt="user pic" width="30" height="24">
@@ -167,24 +163,23 @@ mysqli_close($connect);
         </div>
     </nav>
 
-    <!-- Contenido principal -->
     <div class="container mt-5">
-        <h1>Edit Profile: <?= "{$row["first_name"]} {$row["last_name"]}" ?></h1>
+        <h1 class="text-center fs-1 fw-bold">Edit Profile: <?= "{$row["first_name"]} {$row["last_name"]}" ?></h1>
         <form enctype="multipart/form-data" method="post">
-            <label for="first_name">First Name</label>
+            <label for="first_name" class="form-label fw-semibold fs-4">First Name</label>
             <input type="text" name="first_name" class="form-control mb-3" id="first_name" value="<?= $row["first_name"] ?>">
             <p class="text-danger"><?= $first_name_error ?></p>
-            <label for="last_name">Last Name</label>
+            <label for="last_name" class="form-label fw-semibold fs-4">Last Name</label>
             <input type="text" name="last_name" class="form-control mb-3" id="last_name" value="<?= $row["last_name"] ?>">
             <p class="text-danger"><?= $last_name_error ?></p>
-            <label for="email">Email</label>
+            <label for="email" class="form-label fw-semibold fs-4">Email</label>
             <input type="email" name="email" class="form-control mb-3" id="email" value="<?= $row["email"] ?>">
             <p class="text-danger"><?= $email_error ?></p>
-            <label for="date_of_birth">Date of birth</label>
+            <label for="date_of_birth" class="form-label fw-semibold fs-4">Date of birth</label>
             <input type="date" name="date_of_birth" class="form-control mb-3" id="date_of_birth" value="<?= $row["date_of_birth"] ?>">
             <p class="text-danger"><?= $date_of_birth_error ?></p>
             <p><img src="pictures/<?= $row["images"] ?>" class="rounded" width="150" height="150"></p>
-            <label for="picture">Your profile picture</label>
+            <label for="picture" class="form-label fw-semibold fs-4">Your profile picture</label>
             <input type="file" name="picture" id="picture" class="form-control mb-3">
             <input type="submit" name="edit" value="Update Profile" class="btn btn-warning">
             <div class='d-flex justify-content-center'>

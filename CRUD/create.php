@@ -62,6 +62,15 @@ if (isset($_POST["create"])) {
         body {
             padding-top: 70px;
         }
+
+        body {
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 
@@ -98,7 +107,7 @@ if (isset($_POST["create"])) {
         </div>
     </nav>
     <div class="container">
-        <h1>Create new room</h1>
+        <h1 class="text-center fs-1 fw-bold">Create new room</h1>
         <form method="POST" enctype="multipart/form-data">
             <input type="text" placeholder="Room name" class="form-control mt-3" name="room_name">
             <input type="number" placeholder="Room number" class="form-control mt-3" name="room_number">
