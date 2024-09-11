@@ -93,11 +93,10 @@ if (isset($_POST["submit"])) {
                 </div>";
         }
         header("refresh: 3; url= login.php");
+        exit();
     }
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

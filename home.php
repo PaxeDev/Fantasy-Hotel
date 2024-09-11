@@ -83,7 +83,6 @@ if (mysqli_num_rows($resultReservations) > 0) {
     $reservations = "<p>No reservations found</p>";
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

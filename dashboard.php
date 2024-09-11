@@ -61,7 +61,6 @@ if (mysqli_num_rows($result_admins) > 0) {
 
 mysqli_close($connect);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

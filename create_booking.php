@@ -133,7 +133,6 @@ if ($isAdmin) {
 
 mysqli_close($connect);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

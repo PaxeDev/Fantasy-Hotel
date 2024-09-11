@@ -97,8 +97,6 @@ if (mysqli_num_rows($resultBookings) > 0) {
 } else {
     $bookingList = "<p>No bookings found</p>";
 }
-
-
 mysqli_close($connect);
 ?>
 <!doctype html>

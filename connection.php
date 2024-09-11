@@ -1,8 +1,17 @@
 <?php
-$localhost = "127.0.0.1";
-$username = "root";
-$password = "";
-$dbname = "hotel_room_booking";
+$localhost = "173.212.235.205";
+$username = "olivercodefactor_roothotel";
+$password = "wJ7?[+&-DVOB";
+$dbname = "olivercodefactor_hotel_room_booking";
+
+// Local Conecction:
+// $localhost = "127.0.0.1";
+// $username = "root";
+// $password = "";
+// $dbname = "hotel_room_booking";
+
+// Deployment:
+
 
 $connect = mysqli_connect($localhost, $username, $password, $dbname);
 

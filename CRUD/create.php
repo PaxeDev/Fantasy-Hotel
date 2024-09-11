@@ -24,7 +24,6 @@ if (isset($_POST["create"])) {
     $type = $_POST["type"];
     $Details = $_POST["Details"];
     $picture = FileUpload($_FILES["picture"], "room");
-    # $picture = $_POST["picture"];
     $error = false;
 
     if (!$error) {
@@ -42,14 +41,11 @@ if (isset($_POST["create"])) {
                 Something went wrong, please try again later!
             </div>";
         }
-        # Redirect after 3 second to main page
-
         header("refresh: 3; url= index.php");
+        exit();
     }
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

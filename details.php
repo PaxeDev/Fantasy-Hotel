@@ -50,9 +50,7 @@ $layout = "<div>
 <div class='d-flex justify-content-center'>
     <a href='home.php' class='btn btn-secondary text-center'>Go Back</a>
 </div>";
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
