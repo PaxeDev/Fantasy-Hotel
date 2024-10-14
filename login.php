@@ -60,22 +60,31 @@ if (isset($_POST["login"])) {
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
+        html,
         body {
-            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            height: 100%;
             margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
+        }
+
+        body {
+            padding-top: 70px;
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .container {
+            flex-grow: 1;
+            padding-top: 70px;
         }
     </style>
 </head>
 
 <body>
-    <div class="position-absolute top-0 start-50 translate-middle-x mt-5">
-        <h1 class="text-center fs-2 fw-bold text-light">WELCOME FANTASY HOTEL</h1>
-    </div>
     <div class="container position-absolute top-50 start-50 translate-middle">
+        <h1 class="text-center fs-2 fw-bold text-light">WELCOME FANTASY HOTEL</h1>
         <h2 class="text-center fs-2 fw-bold">Login Page</h2>
         <form method="post" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" autocomplete="off" class="w-50 mx-auto ">
             <div class="mb-3">

@@ -1,6 +1,9 @@
 <?php
 function fileUpload($picture, $source = "user")
 {
+    $pictureName = "";
+    $message = "";
+
     if ($picture["error"] == 4) {
         $pictureName = "avatar.png";
         $message = "No picture has been selected, but you can upload one later!";
@@ -9,16 +12,23 @@ function fileUpload($picture, $source = "user")
         }
     } else {
         $check_if_image = getimagesize($picture["tmp_name"]);
-        $message = $check_if_image ? "Ok" : "Not an image";
-    }
-    if ($message == "Ok") {
-        $ext = strtolower(pathinfo($picture["name"], PATHINFO_EXTENSION));
-        $pictureName = uniqid() . "." . $ext;
-        $destination = "pictures/{$pictureName}";
-        if ($source == "room") {
-            $destination = "../pictures/{$pictureName}";
+        if ($check_if_image) {
+            $ext = strtolower(pathinfo($picture["name"], PATHINFO_EXTENSION));
+            if (in_array($ext, ["jpg", "jpeg", "png", "gif"])) {
+                $pictureName = uniqid() . "." . $ext;
+                $destination = "pictures/{$pictureName}";
+                if ($source == "room") {
+                    $destination = "../pictures/{$pictureName}";
+                }
+                move_uploaded_file($picture["tmp_name"], $destination);
+                $message = "Ok";
+            } else {
+                $message = "Only JPG, JPEG, PNG, and GIF files are allowed!";
+            }
+        } else {
+            $message = "File is not a valid image!";
         }
-        move_uploaded_file($picture["tmp_name"], $destination);
     }
+
     return [$pictureName, $message];
 }

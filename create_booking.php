@@ -142,24 +142,19 @@ mysqli_close($connect);
     <title><?= $isAdmin ? 'Create Booking' : 'Book Room' ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
+        html,
         body {
-            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            height: 100%;
             margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
         }
 
-        .card {
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-        }
-
-        .card-img-top {
-            max-width: 100%;
-            height: auto;
+        body {
+            padding-top: 70px;
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
         }
     </style>
 </head>
@@ -170,17 +165,22 @@ mysqli_close($connect);
             <a class="navbar-brand" href="#">
                 <img src="pictures/<?= $row["images"] ?? '' ?>" alt="user pic" width="30" height="24">
             </a>
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <?php foreach ($navbarLinks as $label => $url) : ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $label === "Edit Profile" ? "active" : "" ?>" href="<?= $url ?>"><?= $label ?></a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-            <div class="d-flex">
-                <a class="btn btn-danger" href="../logout.php?logout">Logout</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <?php foreach ($navbarLinks as $label => $url) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= $url ?>"><?= $label ?></a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+                <div class="d-flex">
+                    <a class="btn btn-danger" href="../logout.php?logout">Logout</a>
+                </div>
             </div>
-        </div>
     </nav>
     <div class="container mt-5">
         <h2 class="text-center fs-1 fw-bold my-5"><?= $isAdmin ? 'Create Booking' : 'Book Room: ' . htmlspecialchars($rowR["room_name"]) ?></h2>

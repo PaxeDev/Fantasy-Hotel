@@ -32,7 +32,7 @@ $layout = "<div>
     <div class='card mx-auto bg-primary-subtle my-3' style='max-width: 100%;'>
         <div class='row g-0'>
             <div class='col-md-4'>
-                <img src='../pictures/{$row["picture"]}' class='img-fluid rounded-start' alt='...'>
+                <img src='pictures/{$row["picture"]}' class='img-fluid rounded-start' alt='...'>
             </div>
             <div class='col-md-8'>
                 <div class='card-body'>
@@ -48,7 +48,7 @@ $layout = "<div>
     </div>
 </div>
 <div class='d-flex justify-content-center'>
-    <a href='home.php' class='btn btn-secondary text-center'>Go Back</a>
+    <a href='home.php' class='btn btn-secondary text-center mb-3'>Go Back</a>
 </div>";
 ?>
 <!DOCTYPE html>
@@ -60,13 +60,24 @@ $layout = "<div>
     <title>Description</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
+        html,
         body {
-            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            height: 100%;
             margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
+        }
+
+        body {
+            padding-top: 70px;
+            background: linear-gradient(to bottom, #4E2394, #DBC9F5);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .container {
+            flex-grow: 1;
+            padding-top: 70px;
         }
     </style>
 </head>
@@ -78,39 +89,43 @@ $layout = "<div>
             <a class="navbar-brand" href="#">
                 <img src="pictures/<?= $row_user["images"] ?>" alt="user pic" width="30" height="24">
             </a>
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <?php if ($isAdmin): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Index</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#bookinglist">Booking List</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../profile_update.php">Edit Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="create.php">Add new room</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../create_booking_admin.php">Create a reservation</a>
-                    </li>
-                <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="home.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile_update.php">Edit Profile</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-            <div class="d-flex">
-                <a class="btn btn-danger" href="logout.php?logout">Logout</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <?php if ($isAdmin): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CRUD/index.php">Index</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CRUD/index.php#bookinglist">Booking List</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.php">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="profile_update.php">Edit Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="CRUD/create.php">Add new room</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="create_booking.php">Create a reservation</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="home.php">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="profile_update.php">Edit Profile</a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+                <div class="d-flex">
+                    <a class="btn btn-danger" href="logout.php?logout">Logout</a>
+                </div>
             </div>
-        </div>
     </nav>
     <div class="container">
         <?= $layout ?>

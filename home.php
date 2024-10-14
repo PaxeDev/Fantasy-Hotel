@@ -23,7 +23,7 @@ if (mysqli_num_rows($result) > 0) {
     while ($rowR = mysqli_fetch_assoc($resultR)) {
         $cards .= "
                <div class='card mt-3 mx-2 mb-3 p-0' style='width: 18rem;'>       
-                   <img src='../pictures/{$rowR["picture"]}' class='card-img-top'>
+                   <img src='pictures/{$rowR["picture"]}' class='card-img-top'>
                    <div class='card-body'>
                    <h5 class='card-title'>{$rowR["room_name"]}</h5>
                    <p class='card-text'>Number room: {$rowR["room_number"]}</p>
@@ -110,21 +110,25 @@ if (mysqli_num_rows($resultReservations) > 0) {
             <a class="navbar-brand" href="#">
                 <img src="pictures/<?= $row["images"] ?>" alt="user pic" width="30" height="24">
             </a>
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="home.php">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#reservations">Reservations</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="profile_update.php">Edit Profile</a>
-                </li>
-            </ul>
-            <div class="d-flex">
-                <a class="btn btn-danger" href="logout.php?logout">Logout</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#reservations">Reservations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile_update.php">Edit Profile</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a class="btn btn-danger" href="logout.php?logout">Logout</a>
+                </div>
             </div>
-        </div>
     </nav>
     <div class="container">
         <h2 class="text-center fs-1 fw-bold mt-5 text-light">Welcome <?= $row["first_name"] . " " . $row["last_name"] ?></h2>
