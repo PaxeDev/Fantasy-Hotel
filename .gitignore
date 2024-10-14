@@ -1,0 +1,27 @@
+# Ignore connection file
+connection.php
+
+# Ignore all log files
+*.log
+
+# Ignore all PHP error log files
+error_log
+
+# Ignore IDE and editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore node_modules (if applicable)
+node_modules/
+
+# Ignore vendor directory for Composer (if applicable)
+vendor/
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore environment variable files
+.env
